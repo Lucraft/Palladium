@@ -8,6 +8,7 @@ import net.minecraft.util.GsonHelper;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
 import net.threetag.palladium.util.context.DataContext;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
@@ -15,8 +16,8 @@ public class ObjectiveScoreTextureVariable extends AbstractIntegerTextureVariabl
 
     private final String objectiveName;
 
-    public ObjectiveScoreTextureVariable(String objectiveName, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public ObjectiveScoreTextureVariable(String objectiveName, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.objectiveName = objectiveName;
     }
 
@@ -42,9 +43,12 @@ public class ObjectiveScoreTextureVariable extends AbstractIntegerTextureVariabl
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new ObjectiveScoreTextureVariable(
                     GsonHelper.getAsString(json, "objective"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

@@ -54,6 +54,9 @@ dependencies {
     modApi "net.threetag:palladiumcore-forge:${rootProject.palladiumcore_version}"
     include "net.threetag:palladiumcore-forge:${rootProject.palladiumcore_version}"
 
+    // Mocha
+    include modImplementation("team.unnamed:mocha:3.0.0-SNAPSHOT")
+
     // Mixin Extras
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.2.0"))
     implementation(include("io.github.llamalad7:mixinextras-forge:0.2.0"))

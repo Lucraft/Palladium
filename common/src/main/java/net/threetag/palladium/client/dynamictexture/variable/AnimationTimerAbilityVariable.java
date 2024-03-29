@@ -12,8 +12,7 @@ import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladium.power.ability.AnimationTimer;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
-import net.threetag.palladium.util.property.IntegerProperty;
-import net.threetag.palladium.util.property.PalladiumProperty;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
@@ -21,8 +20,8 @@ public class AnimationTimerAbilityVariable extends AbstractIntegerTextureVariabl
 
     private final AbilityReference reference;
 
-    public AnimationTimerAbilityVariable(ResourceLocation powerId, String abilityId, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public AnimationTimerAbilityVariable(ResourceLocation powerId, String abilityId, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.reference = new AbilityReference(powerId, abilityId);
     }
 
@@ -46,10 +45,13 @@ public class AnimationTimerAbilityVariable extends AbstractIntegerTextureVariabl
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new AnimationTimerAbilityVariable(
                     GsonUtil.getAsResourceLocation(json, "power"),
                     GsonHelper.getAsString(json, "ability"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

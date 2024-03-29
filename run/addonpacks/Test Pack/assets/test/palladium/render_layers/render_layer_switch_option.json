@@ -4,8 +4,7 @@
     "variables": {
       "I": {
         "type": "palladium:entity_ticks",
-        "divide": 20,
-        "modulo": 3
+        "function": "math.mod(value / 20, 3)"
       }
     },
     "base": "test:textures/models/animation_layer_#I.png"

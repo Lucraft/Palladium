@@ -11,6 +11,7 @@ import net.threetag.palladium.power.ability.AbilityEntry;
 import net.threetag.palladium.power.ability.AbilityReference;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class AbilityTicksTextureVariable extends AbstractIntegerTextureVariable 
 
     private final AbilityReference reference;
 
-    public AbilityTicksTextureVariable(ResourceLocation powerId, String abilityId, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public AbilityTicksTextureVariable(ResourceLocation powerId, String abilityId, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.reference = new AbilityReference(powerId, abilityId);
     }
 
@@ -42,10 +43,13 @@ public class AbilityTicksTextureVariable extends AbstractIntegerTextureVariable 
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new AbilityTicksTextureVariable(
                     GsonUtil.getAsResourceLocation(json, "power"),
                     GsonHelper.getAsString(json, "ability"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

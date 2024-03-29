@@ -11,6 +11,7 @@ import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.property.EntityPropertyHandler;
 import net.threetag.palladium.util.property.IntegerProperty;
 import net.threetag.palladium.util.property.PalladiumProperty;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,8 +20,8 @@ public class IntegerPropertyVariable extends AbstractIntegerTextureVariable {
 
     private final String propertyKey;
 
-    public IntegerPropertyVariable(String propertyKey, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public IntegerPropertyVariable(String propertyKey, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.propertyKey = propertyKey;
     }
 
@@ -42,9 +43,12 @@ public class IntegerPropertyVariable extends AbstractIntegerTextureVariable {
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new IntegerPropertyVariable(
                     GsonHelper.getAsString(json, "property"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

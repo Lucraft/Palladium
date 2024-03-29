@@ -3,17 +3,19 @@ package net.threetag.palladium.client.dynamictexture.variable;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
 import net.threetag.palladium.item.Openable;
 import net.threetag.palladium.util.context.DataContext;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
 public class OpenableEquipmentProgressVariable extends AbstractIntegerTextureVariable {
 
-    public OpenableEquipmentProgressVariable(List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public OpenableEquipmentProgressVariable(List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
     }
 
     @Override
@@ -31,7 +33,10 @@ public class OpenableEquipmentProgressVariable extends AbstractIntegerTextureVar
 
         @Override
         public ITextureVariable parse(JsonObject json) {
-            return new OpenableEquipmentProgressVariable(AbstractIntegerTextureVariable.parseOperations(json));
+            String function = GsonHelper.getAsString(json, "function", null);
+
+            return new OpenableEquipmentProgressVariable(AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

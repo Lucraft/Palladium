@@ -11,6 +11,7 @@ import net.threetag.palladium.power.energybar.EnergyBar;
 import net.threetag.palladium.power.energybar.EnergyBarReference;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class EnergyBarTextureVariable extends AbstractIntegerTextureVariable {
 
     private final EnergyBarReference reference;
 
-    public EnergyBarTextureVariable(ResourceLocation powerId, String energyBarName, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public EnergyBarTextureVariable(ResourceLocation powerId, String energyBarName, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.reference = new EnergyBarReference(powerId, energyBarName);
     }
 
@@ -42,10 +43,13 @@ public class EnergyBarTextureVariable extends AbstractIntegerTextureVariable {
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new EnergyBarTextureVariable(
                     GsonUtil.getAsResourceLocation(json, "power"),
                     GsonHelper.getAsString(json, "energy_bar"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override

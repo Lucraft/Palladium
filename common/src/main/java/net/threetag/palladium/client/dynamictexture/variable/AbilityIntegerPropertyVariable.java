@@ -5,16 +5,15 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.LivingEntity;
 import net.threetag.palladium.Palladium;
 import net.threetag.palladium.documentation.JsonDocumentationBuilder;
 import net.threetag.palladium.power.ability.AbilityEntry;
 import net.threetag.palladium.power.ability.AbilityReference;
-import net.threetag.palladium.power.ability.AbilityUtil;
 import net.threetag.palladium.util.context.DataContext;
 import net.threetag.palladium.util.json.GsonUtil;
 import net.threetag.palladium.util.property.IntegerProperty;
 import net.threetag.palladium.util.property.PalladiumProperty;
+import team.unnamed.mocha.MochaEngine;
 
 import java.util.List;
 
@@ -23,8 +22,8 @@ public class AbilityIntegerPropertyVariable extends AbstractIntegerTextureVariab
     private final AbilityReference reference;
     private final String propertyKey;
 
-    public AbilityIntegerPropertyVariable(ResourceLocation powerId, String abilityId, String propertyKey, List<Pair<Operation, Integer>> operations) {
-        super(operations);
+    public AbilityIntegerPropertyVariable(ResourceLocation powerId, String abilityId, String propertyKey, List<Pair<Operation, Integer>> operations, MoLangIntFunction function) {
+        super(operations, function);
         this.reference = new AbilityReference(powerId, abilityId);
         this.propertyKey = propertyKey;
     }
@@ -53,11 +52,14 @@ public class AbilityIntegerPropertyVariable extends AbstractIntegerTextureVariab
 
         @Override
         public ITextureVariable parse(JsonObject json) {
+            String function = GsonHelper.getAsString(json, "function", null);
+
             return new AbilityIntegerPropertyVariable(
                     GsonUtil.getAsResourceLocation(json, "power"),
                     GsonHelper.getAsString(json, "ability"),
                     GsonHelper.getAsString(json, "property"),
-                    AbstractIntegerTextureVariable.parseOperations(json));
+                    AbstractIntegerTextureVariable.parseOperations(json),
+                    function != null ? MochaEngine.createStandard().compile(function, MoLangIntFunction.class) : null);
         }
 
         @Override
@@ -68,7 +70,7 @@ public class AbilityIntegerPropertyVariable extends AbstractIntegerTextureVariab
         @Override
         public void addDocumentationFields(JsonDocumentationBuilder builder) {
             builder.setTitle("Ability Integer-Property");
-            
+
             builder.addProperty("power", ResourceLocation.class)
                     .description("ID of the power the ability is in.")
                     .required().exampleJson(new JsonPrimitive("example:power_id"));

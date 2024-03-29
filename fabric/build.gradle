@@ -40,6 +40,9 @@ dependencies {
     modApi "net.threetag:palladiumcore-fabric:${rootProject.palladiumcore_version}"
     include "net.threetag:palladiumcore-fabric:${rootProject.palladiumcore_version}"
 
+    // Mocha
+    include modImplementation("team.unnamed:mocha:3.0.0-SNAPSHOT")
+
     // QuiltSL
     modCompileOnly "org.quiltmc:qsl:${rootProject.qsl_version}"
 
